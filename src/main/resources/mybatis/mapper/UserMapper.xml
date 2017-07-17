@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.fictio.askPro.dao.UserDao">
+	<resultMap id="BaseResultMap" type="org.fictio.askPro.pojo.User">
+		<result column="user_id" jdbcType="INTEGER" property="userId" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="user_email" jdbcType="VARCHAR" property="userEmail" />
+		<result column="user_mobile" jdbcType="VARCHAR" property="userMobile" />
+		<result column="user_real_name" jdbcType="VARCHAR" property="userRealName" />
+		<result column="user_status" jdbcType="VARCHAR" property="userStatus" />
+		<result column="user_score" jdbcType="INTEGER" property="userScore" />
+		<result column="user_attention" jdbcType="VARCHAR" property="userAttention" />
+		<result column="user_black_list" jdbcType="VARCHAR" property="userBlackList" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+	</resultMap>
+	<select id="selectUserByUsername" resultMap="BaseResultMap">
+		select * from ijjg_user where user_name = #{userName} limit 1
+	</select>
+	<update id="updateUserLastLoginTime" parameterType="org.fictio.askPro.pojo.User">
+		update ijjg_user set last_login_time = #{lastLoginTime} where user_id = #{userId}
+	</update>
+	<update id="updateUserScore" parameterType="org.fictio.askPro.pojo.User">
+		update ijjg_user set user_score = concat(user_score+#{userScore}) where user_id = #{userId};
+	</update>
+	
+	<insert id="insert" parameterType="org.fictio.askPro.pojo.User">
+		insert into ijjg_user (user_id, user_name, `password`,
+		user_email, user_mobile, user_real_name,
+		user_status, user_score, user_attention,
+		user_black_list, create_time, last_login_time)
+		values (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR},
+		#{password,jdbcType=VARCHAR},
+		#{userEmail,jdbcType=VARCHAR}, #{userMobile,jdbcType=VARCHAR}, #{userRealName,jdbcType=VARCHAR},
+		#{userStatus,jdbcType=VARCHAR}, #{userScore,jdbcType=INTEGER},
+		#{userAttention,jdbcType=VARCHAR},
+		#{userBlackList,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{lastLoginTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="org.fictio.askPro.pojo.User">
+		insert into ijjg_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="userName != null">
+				user_name,
+			</if>
+			<if test="password != null">
+				`password`,
+			</if>
+			<if test="userEmail != null">
+				user_email,
+			</if>
+			<if test="userMobile != null">
+				user_mobile,
+			</if>
+			<if test="userRealName != null">
+				user_real_name,
+			</if>
+			<if test="userStatus != null">
+				user_status,
+			</if>
+			<if test="userScore != null">
+				user_score,
+			</if>
+			<if test="userAttention != null">
+				user_attention,
+			</if>
+			<if test="userBlackList != null">
+				user_black_list,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="lastLoginTime != null">
+				last_login_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userId != null">
+				#{userId,jdbcType=INTEGER},
+			</if>
+			<if test="userName != null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="userEmail != null">
+				#{userEmail,jdbcType=VARCHAR},
+			</if>
+			<if test="userMobile != null">
+				#{userMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="userRealName != null">
+				#{userRealName,jdbcType=VARCHAR},
+			</if>
+			<if test="userStatus != null">
+				#{userStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="userScore != null">
+				#{userScore,jdbcType=INTEGER},
+			</if>
+			<if test="userAttention != null">
+				#{userAttention,jdbcType=VARCHAR},
+			</if>
+			<if test="userBlackList != null">
+				#{userBlackList,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastLoginTime != null">
+				#{lastLoginTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+</mapper>

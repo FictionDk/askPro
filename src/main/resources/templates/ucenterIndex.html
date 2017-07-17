@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="bootstrap">  
+<head>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" ></link>
+<script th:src="@{/js/jquery-1.12.4.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/jquery.cookie.js}"></script>
+<script th:src="@{/js/md5.js}"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ucenterIndex</title>
+</head>
+<body>
+<div class="container">
+	<div class="row clearfix">
+		<!-- 页头开始 -->
+		<div class="col-md-12 column">
+			<div class="page-header">
+				<h1>
+					AskPro <small>这是测试</small>
+				</h1>
+			</div>
+		</div>
+		<!-- 页头开始 -->
+	
+		<!-- 内容开始 -->
+		<div class="col-md-12 column">
+		<div class="alert alert-success alert-dismissable" id="notice" style="display:none">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+			<a href="#" class="alert-link" id="msg"></a>
+		</div>
+		<div class="alert alert-success alert-dismissable" id="question" style="display:none">
+			<a href="/view/myQuest" class="alert-link">我的提问</a>
+		</div>
+		<div class="list-group">
+			<a href="#" class="list-group-item active">个人中心</a>
+			<div class="list-group-item" id="usename">
+				用户名:
+			</div>
+			<div class="list-group-item" id="mobile">
+				手机号:
+			</div>
+			<div class="list-group-item" id="time">
+				最后登录时间:
+			</div>
+			<div class="list-group-item" id="loginOut" style="display:none">
+				退出登录
+			</div>
+			<div class="list-group-item" id="ask" style="display:none">
+				提问
+			</div>
+			<a class="list-group-item active"> <span id="count" class="badge">0</span>未读私信</a>
+		</div>
+		</div>
+		<!-- 内容结束 -->
+	
+		<!-- 页脚开始 -->
+		<div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+			<div class="container text-center login-bottom">
+				&copy; 2017 <br/> Powered by ficito.d2k@gmail.com
+			</div>
+		</div>
+		<!-- 页脚结束 -->
+	
+	</div>
+</div>
+</body>
+
+<script type="text/javascript">
+var tokenName = "askPro_token"
+var userInfoUrl = "/user/userInfoGet";
+var loginOutUrl = "/user/loginOut";
+var loginUrl = "/view/login";
+var askUrl = "/view/questEdit";
+var token = $.cookie(tokenName);
+if(token == null || token == ''){
+	alert("登录失效,请重新登录");
+	turnViewUrl(loginUrl);
+}
+getUserInfo(token);
+//监听退出登录div
+$(function(){
+	$("#loginOut").click(function(){
+		console.info(loginUrl);
+		loginOut(token);
+	});
+});
+//监听退出提问div
+$(function(){
+	$("#ask").click(function(){
+		console.info(askUrl);
+		turnViewUrl(askUrl);
+	});
+});
+//退出登录ajax请求
+function loginOut(token){
+	var reqData = {"token":token};
+	var responseData = ajaxRequest(loginOutUrl,reqDatad);
+	loginOutResponse();
+}
+//获取用户信息ajax请求
+function getUserInfo(token){
+	var reqData = {"token":token};
+	var responseData = ajaxRequest(userInfoUrl,reqData);
+	if(responseData.code != 1){
+		turnViewUrl(loginUrl);
+	}else{
+		getUserInfoResponse(responseData);
+		$.cookie("questId",0);
+	}
+}
+
+//登录后选项展示
+function loginShow(){
+	$("#loginOut").show();
+	$("#ask").show();
+}
+//展示通知数量
+function showCountView(msgList){
+	console.info(msgList[0]);
+	if(msgList[0]['alreadyRead'] == 0){
+		$("#notice").show();
+		$("#msg").html(msgList[0]['message']+"<br/>"+msgList[0]['msgTime']);
+	}
+}
+//问题展示
+function showQuestionView(){
+	$("#question").show();
+}
+//展示页面跳转
+function turnViewUrl(url){
+	location.href=url;
+}
+
+function ajaxRequest(reqUrl,reqData){
+	var responseData = {};
+	$.ajax({
+		type:"POST",
+		url:reqUrl,
+		contentType : "application/json; charset=utf-8",
+		async: false,
+		data:JSON.stringify(reqData),
+		success:function(data){
+			data = JSON.parse(data);
+			console.info(data);
+			if(data.code == "1"){
+				responseData = data;
+			}else{
+				alert(data.message);
+			}
+		},
+	});
+	return responseData;
+}
+//退出登录回调方法
+function loginOutResponse(){
+	$.cookie(tokenName,null);
+	turnViewUrl(loginUrl);
+}
+//获取用户信息方法回调
+function getUserInfoResponse(data){
+	var htmlUser = data.object.user.userName;
+	var htmlLogin = data.object.user.lastLoginTime?data.object.user.lastLoginTime:data.object.user.createTime;
+	var htmlMobile = data.object.user.userMobile;
+	var htmlCount = data.object.messageCount;
+	var questionCount = data.object.questionCount;
+	$("#usename").append(htmlUser);
+	$("#time").append(htmlLogin);
+	$("#mobile").append(htmlMobile);
+	$("#count").html(htmlCount);
+	if(htmlCount > 0){
+		showCountView(data.object.messageList);
+	}
+	if(questionCount > 0){
+		showQuestionView();
+	}
+	loginShow();
+}
+</script>
+</html>

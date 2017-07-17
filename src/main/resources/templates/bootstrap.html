@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>layout</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<script th:src="@{/js/jquery-1.12.4.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/jquery.cookie.js}"></script>
+<script th:src="@{/js/md5.js}"></script>
+</head>
+
+<body>
+<div class="container">
+<div class="row clearfix">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="page-header">
+				<h1>
+					AskPro <small>这是测试</small>
+				</h1>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-12 column" style="margin:auto;margin-bottom:70px;">
+	    <div th:include="this :: content"></div>
+	</div>
+
+	<div class="navbar navbar-default navbar-fixed-bottom"
+		role="navigation">
+		<div class="container text-center login-bottom">
+			&copy; 2017 <br /> Powered by ficito.d2k@gmail.com
+		</div>
+	</div>
+</div>
+</div>
+</body>
+</html>

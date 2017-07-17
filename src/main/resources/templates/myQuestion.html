@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="bootstrap">  
+<head>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<script th:src="@{/js/jquery-1.12.4.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/jquery.cookie.js}"></script>
+<script th:src="@{/js/md5.js}"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>我的提问</title>
+</head>
+<body>
+<div class="container">
+	<div class="row clearfix">
+		<!-- 页头开始 -->
+		<div class="col-md-12 column">
+			<div class="page-header">
+				<h1>
+					AskPro <small>这是测试</small>
+				</h1>
+			</div>
+		</div>
+		<!-- 页头开始 -->
+	
+		<!-- 内容开始 -->
+		<div class="col-md-12 column">
+		<div class="list-group">
+			<a href="#" class="list-group-item active">我的问问</a>
+			<div id="questionList">
+			</div>
+			<a class="list-group-item active"> <span id="count" class="badge">0</span>问题数量</a>
+		</div>
+		</div>
+		<!-- 内容结束 -->
+	
+		<!-- 页脚开始 -->
+		<div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+			<div class="container text-center login-bottom">
+				&copy; 2017 <br /> Powered by ficito.d2k@gmail.com
+			</div>
+		</div>
+		<!-- 页脚结束 -->
+	
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+var tokenName = "askPro_token"
+var userIndexUrl = "/user/userIndex";
+var loginUrl = "/view/login";
+var myQuestUrl = "/user/userInfoGet";
+var getQuestUrl = "/view/questEdit";
+var questIdList = [];
+
+getQuestionList();
+console.info(questIdList.length);
+
+$(function(){     
+    $(".list-group-item").each(function(){  
+        $(this).click(function(){
+        	var id = $(this).attr("id")?$(this).attr("id"):0;
+        	if(id > 0){
+        		clickevent(id);
+        	}
+        });  
+    });  
+});  
+
+function clickevent(questId){
+	$.cookie("questId",questId);
+	console.info($.cookie("questId"));
+	turnView(getQuestUrl);
+}
+
+
+function getQuestionList(){
+	var token = $.cookie(tokenName);
+	if(token == null || token == ''){
+		alert("登录失效,请重新登录");
+		turnView(loginUrl);
+		return null;
+	}
+	$.ajax({
+		type:"POST",
+		url:myQuestUrl,
+		contentType : "application/json; charset=utf-8",
+		async: false,
+		data:JSON.stringify({"token":token}),
+		success:function(data){
+			data = JSON.parse(data);
+			console.info(data);
+			if(data.code == "1"){
+				questionListShow(data.object.questionList,data.object.questionCount);
+			}else{
+				alert(data.message);
+			}
+		},
+	});
+}
+
+function questionListShow(questionList,questionCount){
+	$("#count").html(questionCount);
+	for(var i = 0; i < questionCount; i++){
+		console.info(questionList[0])
+		var html = "<div class='list-group-item' id='"+questionList[i]['questId']+"'>"+
+			"标题:"+questionList[i]['questTitle']+"<br>"+
+			"最近更新时间:"+questionList[i]['questUpdateTime']+
+			"</div>";
+		console.info(html);
+		$("#questionList").append(html);
+		questIdList[i] = questionList[i]['questId'];
+	}
+}
+
+function turnView(url){
+	location.href=url;
+}
+
+</script>
+</html>

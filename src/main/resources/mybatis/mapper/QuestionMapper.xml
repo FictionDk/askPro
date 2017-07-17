@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.fictio.askPro.dao.QuestionMapper">
+	<resultMap id="BaseResultMap" type="org.fictio.askPro.pojo.Question">
+		<result column="quest_id" jdbcType="INTEGER" property="questId" />
+		<result column="quest_user_id" jdbcType="INTEGER" property="questUserId" />
+		<result column="quest_title" jdbcType="VARCHAR" property="questTitle" />
+		<result column="quest_body" jdbcType="LONGVARCHAR" property="questBody" />
+		<result column="quest_create_time" jdbcType="TIMESTAMP" property="questCreateTime" />
+		<result column="quest_update_time" jdbcType="TIMESTAMP" property="questUpdateTime" />
+	</resultMap>
+	
+	<select id="selectQuestionsByUserId" resultMap="BaseResultMap">
+		select * from ijjg_question where quest_user_id = #{userId}		
+	</select>
+	<select id="selectQuestionsById" resultMap="BaseResultMap">
+		select * from ijjg_question where quest_id = #{questId}		
+	</select>
+	
+	
+	<update id="updateQuestionById">
+		update ijjg_question set (quest_title,
+		quest_create_time, quest_update_time, quest_body)
+		values (#{questTitle,jdbcType=VARCHAR},
+		#{questCreateTime,jdbcType=TIMESTAMP}, #{questUpdateTime,jdbcType=TIMESTAMP},
+		#{questBody,jdbcType=LONGVARCHAR}) 
+		where quest_id = #{questId}
+	</update>
+	
+	<insert id="insert" parameterType="org.fictio.askPro.pojo.Question">
+		insert into ijjg_question (quest_id, quest_user_id, quest_title,
+		quest_create_time, quest_update_time, quest_body)
+		values (#{questId,jdbcType=INTEGER}, #{questUserId,jdbcType=INTEGER},
+		#{questTitle,jdbcType=VARCHAR},
+		#{questCreateTime,jdbcType=TIMESTAMP}, #{questUpdateTime,jdbcType=TIMESTAMP},
+		#{questBody,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="org.fictio.askPro.pojo.Question">
+		insert into ijjg_question
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="questId != null">
+				quest_id,
+			</if>
+			<if test="questUserId != null">
+				quest_user_id,
+			</if>
+			<if test="questTitle != null">
+				quest_title,
+			</if>
+			<if test="questCreateTime != null">
+				quest_create_time,
+			</if>
+			<if test="questUpdateTime != null">
+				quest_update_time,
+			</if>
+			<if test="questBody != null">
+				quest_body,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="questId != null">
+				#{questId,jdbcType=INTEGER},
+			</if>
+			<if test="questUserId != null">
+				#{questUserId,jdbcType=INTEGER},
+			</if>
+			<if test="questTitle != null">
+				#{questTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="questCreateTime != null">
+				#{questCreateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="questUpdateTime != null">
+				#{questUpdateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="questBody != null">
+				#{questBody,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+</mapper>
