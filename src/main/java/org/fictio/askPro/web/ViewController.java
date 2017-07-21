@@ -26,4 +26,16 @@ public class ViewController {
 	public String myQuestion(){
 		return "myQuestion";
 	}
+	@RequestMapping("/questShow")
+	public String questionShow(){
+		return "questionShow";
+	}
+	@RequestMapping("/answerShow")
+	public String answerShow(){
+		return "answerShow";
+	}
+	@RequestMapping("answerEdit")
+	public String answerEdit(){
+		return "answerEdit";
+	}
 }

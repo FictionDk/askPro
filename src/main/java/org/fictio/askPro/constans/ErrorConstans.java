@@ -35,5 +35,8 @@ public class ErrorConstans {
 	public static final String QUESTION_UPDATE_FAIL_MSG = "问题更新失败";
 	public static final String QUESTIION_UPDATE_FAIL_CODE = "412";
 	
+	public static final String QUESTION_HAS_BEAN_ANSWER_MSG = "当前问题已经你已经回答过";
+	public static final String QUESTION_HAS_BEAN_ANSWER_CODE = "413";
+	
 
 }

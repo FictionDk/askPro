@@ -16,6 +16,12 @@
 	<select id="selectQuestionsById" resultMap="BaseResultMap">
 		select * from ijjg_question where quest_id = #{questId}		
 	</select>
+	<select id="selectQuestionsByPage" resultMap="BaseResultMap">
+		select * from ijjg_question where quest_user_id = #{userId} limit #{pageStart},#{pageSize}
+	</select>
+	<select id="selectAllQuestionsByPage" resultMap="BaseResultMap">
+		select * from ijjg_question order by quest_update_time desc limit #{pageStart},#{pageSize};
+	</select>
 	
 	
 	<update id="updateQuestionById">

@@ -62,4 +62,9 @@ public class Question {
     public void setQuestBody(String questBody) {
         this.questBody = questBody == null ? null : questBody.trim();
     }
+
+	@Override
+	public String toString() {
+		return "Question [questId=" + questId + ", questUserId=" + questUserId + ", questTitle=" + questTitle + "]";
+	}
 }

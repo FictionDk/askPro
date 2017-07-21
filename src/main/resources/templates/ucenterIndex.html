@@ -49,6 +49,9 @@
 			<div class="list-group-item" id="loginOut" style="display:none">
 				退出登录
 			</div>
+			<div class="list-group-item" id="allQuest">
+				所有问题
+			</div>
 			<div class="list-group-item" id="ask" style="display:none">
 				提问
 			</div>
@@ -75,6 +78,7 @@ var userInfoUrl = "/user/userInfoGet";
 var loginOutUrl = "/user/loginOut";
 var loginUrl = "/view/login";
 var askUrl = "/view/questEdit";
+var allQuestUrl = "/view/questShow";
 var token = $.cookie(tokenName);
 if(token == null || token == ''){
 	alert("登录失效,请重新登录");
@@ -93,6 +97,12 @@ $(function(){
 	$("#ask").click(function(){
 		console.info(askUrl);
 		turnViewUrl(askUrl);
+	});
+});
+//监听所有问题列表div
+$(function(){
+	$("#allQuest").click(function(){
+		turnViewUrl(allQuestUrl);
 	});
 });
 //退出登录ajax请求

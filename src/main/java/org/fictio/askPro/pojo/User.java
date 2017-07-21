@@ -125,4 +125,12 @@ public class User {
     public void setLastLoginTime(Date lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
     }
+
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", userName=" + userName + ", password=" + password + ", userEmail="
+				+ userEmail + ", userMobile=" + userMobile + ", userRealName=" + userRealName + ", userStatus="
+				+ userStatus + ", userScore=" + userScore + ", userAttention=" + userAttention + ", userBlackList="
+				+ userBlackList + ", createTime=" + createTime + ", lastLoginTime=" + lastLoginTime + "]";
+	}
 }

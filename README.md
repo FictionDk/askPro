@@ -1,7 +1,7 @@
 askPro
 ----
 1. 描述,仿知乎问答网站
-2. 涉及spring-boot+mybatis+jquery+REST
+2. 涉及spring-boot+mybatis+jquery+bootstrap+REST
 
 ### 07-14
 1. 用户注册,登录,校验;

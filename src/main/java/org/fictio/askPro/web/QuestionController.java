@@ -1,6 +1,9 @@
 package org.fictio.askPro.web;
 
 import org.fictio.askPro.aop.annotation.UserAccess;
+import org.fictio.askPro.pojo.Answer;
+import org.fictio.askPro.pojo.AnswerReq;
+import org.fictio.askPro.pojo.Page;
 import org.fictio.askPro.pojo.Question;
 import org.fictio.askPro.pojo.RequestData;
 import org.fictio.askPro.pojo.ResponseData;
@@ -46,6 +49,43 @@ public class QuestionController {
 			log.error(result.getMessage());
 			result.setMessage("参数不能为空");
 		}
+		return gson.toJson(result);
+	}
+	
+	@RequestMapping(value="/list",method=RequestMethod.POST)
+	@UserAccess
+	public String getQuestionListPage(@RequestBody RequestData<Integer> req){
+		log.info(req.getUserName());
+		ResponseData<Page<Question>> result = new ResponseData<>();
+		result = questionService.getQuestionListByUser(req.getUserName(),req.getObj());
+		return gson.toJson(result);
+	}
+	
+	@RequestMapping(value="/allShow",method=RequestMethod.POST)
+	public String allQuestionListShow(@RequestBody RequestData<Integer>req){
+		ResponseData<Page<Question>> result = new ResponseData<>();
+		String token = "";
+		token = req.getToken();
+		result = questionService.getQuestionShow(token,req.getObj());
+		return gson.toJson(result);
+	}
+	
+	@RequestMapping(value="/answerList",method=RequestMethod.POST)
+	@UserAccess
+	public String queryAnswerListByQuestId(@RequestBody RequestData<AnswerReq>req){
+		ResponseData<Page<Answer>> result = new ResponseData<>();
+		result = questionService.getQuestionAnswerList(req.getUserName(),req.getObj());
+		return gson.toJson(result);
+	}
+	
+	@RequestMapping(value="/answer",method=RequestMethod.POST)
+	@UserAccess
+	public String answerQuestion(@RequestBody RequestData<Answer>req){
+		ResponseData<String> result = new ResponseData<>();
+		Answer answer = req.getObj();
+		answer.setUserName(req.getUserName());
+		log.info(answer.toString());
+		result = questionService.answerQuestion(answer);
 		return gson.toJson(result);
 	}
 	

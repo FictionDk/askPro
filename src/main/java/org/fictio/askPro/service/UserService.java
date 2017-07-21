@@ -174,15 +174,18 @@ public class UserService {
 
 	/**
 	 * 更新用户积分
+	 * 
 	 * @param user 
 	 * @param askQuestion
 	 */
 	public void addUserScore(String scoreType, User user) {
-		//user = null;
-		scoreType = "";
 		switch (scoreType) {
 		case ScoreTypeConstans.ASK_QUESTION:
 			user.setUserScore(ScoreTypeConstans.ASK_QUESTION_SCORE);
+			userDao.updateUserScore(user);
+			break;
+		case ScoreTypeConstans.ANSWER_QUESTION:
+			user.setUserScore(ScoreTypeConstans.ANSWER_QUESTION_SCORE);
 			userDao.updateUserScore(user);
 			break;
 		default:

@@ -56,11 +56,17 @@
 		<table tableName="ijjg_message" domainObjectName="Message" 
 					enableCountByExample="false" enableDeleteByExample="false" 
 					enableSelectByExample="false" enableUpdateByExample="false">
-		</table> -->
+		</table> 
 		
 		<table tableName="ijjg_question" domainObjectName="Question" 
 					enableCountByExample="false" enableDeleteByExample="false" 
-					enableSelectByExample="true" enableUpdateByExample="false">
+					enableSelectByExample="false" enableUpdateByExample="false">
+		</table>
+-->
+		
+		<table tableName="ijjg_answer" domainObjectName="Answer" 
+					enableCountByExample="false" enableDeleteByExample="false" 
+					enableSelectByExample="false" enableUpdateByExample="false">
 		</table>
 		
 		<!-- 不生成example相关类 

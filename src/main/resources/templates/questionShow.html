@@ -11,7 +11,7 @@
 <script th:src="@{/js/md5.js}"></script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>我的提问</title>
+<title>问题展示</title>
 </head>
 <body>
 <div class="container">
@@ -29,7 +29,7 @@
 		<!-- 内容开始 -->
 		<div class="col-md-12 column">
 		<div class="list-group" style="margin-bottom:20%;">
-			<a href="#" class="list-group-item active" onclick="createNew()">我的问问/提问</a>
+			<a href="#" class="list-group-item active" onclick="createNew()">问题展示/新建问题</a>
 			<div id="questionList">
 			</div>
 			<a class="list-group-item active" id="getMore" onclick="getQuestionList()"> <span id="count" class="badge">0</span>更多问题</a>
@@ -51,11 +51,12 @@
 </div>
 </body>
 <script type="text/javascript">
-var loginError = '400';
 var tokenName = "askPro_token"
 var userIndexUrl = "/user/userIndex";
 var loginUrl = "/view/login";
-var myQuestUrl = "/quest/list";
+//var myQuestUrl = "/user/userInfoGet";
+var allQuestUrl = "/quest/allShow";
+var answerUrl = "/view/answerShow";
 var getQuestUrl = "/view/questEdit";
 var questIdList = [];
 var page = 0;
@@ -66,10 +67,10 @@ var getMore = true;
 var token = $.cookie(tokenName);
 if(token == null || token == ''){
 	alert("登录失效,请重新登录");
-	turnViewUrl(loginUrl);
+	turnView(loginUrl);
 }
 getQuestionList();
-//监听问题列表点击修改详情跳转事件
+console.info(questIdList.length);
 $(function(){     
     $(".list-group-item").each(function(){  
         $(this).click(function(){
@@ -80,22 +81,25 @@ $(function(){
         });  
     });  
 });
-//跳转到问题编辑页面事件
+
+//页面跳转
 function clickevent(questId){
 	$.cookie("questId",questId);
-	turnViewUrl(getQuestUrl);
+	console.info($.cookie("questId"));
+	turnView(answerUrl);
 }
-//获取问题列表[分页]
+//获取问题列表
 function getQuestionList(){
 	if(!getMore){
 		return null;
 	}
-	var url = myQuestUrl;
+	var url = allQuestUrl;
 	var reqData = {"token":token,"obj":pageStart};
 	var response = ajaxRequest(url, reqData);
 	if(response.code != 1){
-		turnViewUrl(loginUrl);
+		turnView(loginUrl);
 	}
+	console.info(response.object);
 	questionListShow(response.object.pageContent, response.object.countSize);
 	pageSize = response.object.pageSize;
 	if(pageSize != response.object.countSize){
@@ -106,15 +110,37 @@ function getQuestionList(){
 		console.info("pageStart="+pageStart);
 	}
 }
+
 //所有加载完成,点击失效
 function clickInvalid(){
 	var html = "<span id='count' class='badge'>"+questionSize+"</span>"+"没有更多了";
 	$("#getMore").html(html);
 	getMore = false;
 }
-//问题列表展示
+
+//ajax请求
+function ajaxRequest(reqUrl,reqData){
+	var responseData = {};
+	$.ajax({
+		type:"POST",
+		url:reqUrl,
+		contentType : "application/json; charset=utf-8",
+		async: false,
+		data:JSON.stringify(reqData),
+		success:function(data){
+			responseData = JSON.parse(data);
+			if(responseData.code != "1"){
+				alert(responseData.message);
+			}
+		},
+	});
+	return responseData;
+}
+
 function questionListShow(questionList,questionCount){
-	questionSize += questionCount;
+	console.info("count="+questionCount);
+	console.info("size="+questionSize);
+	questionSize += questionCount; 
 	$("#count").html(questionSize);
 	for(var i = 0; i < questionCount; i++){
 		questionObj = questionList[i];
@@ -126,37 +152,13 @@ function questionListShow(questionList,questionCount){
 		questIdList[i] = questionList[i]['questId'];
 	}
 }
-//创建新问题页面跳转
 function createNew(){
 	$.cookie("questId",0);
-	turnViewUrl(getQuestUrl);
+	turnView(getQuestUrl);
 }
-//展示页面跳转[每页都需要]
-function turnViewUrl(url){
-	window.location.href=url;
+function turnView(url){
+	location.href=url;
 }
-//ajax请求[每页都需要]
-function ajaxRequest(reqUrl,reqData){
-	var responseData = {};
-	$.ajax({
-		type:"POST",
-		url:reqUrl,
-		contentType : "application/json; charset=utf-8",
-		async: false,
-		data:JSON.stringify(reqData),
-		success:function(data){
-			responseData = JSON.parse(data);
-			if(responseData.code == loginError){
-				alert("登录失效,请重新登录");
-				turnViewUrl(loginUrl);
-				return null;
-			}
-			if(responseData.code != "1"){
-				alert(responseData.message);
-			}
-		},
-	});
-	return responseData;
-}
+
 </script>
 </html>

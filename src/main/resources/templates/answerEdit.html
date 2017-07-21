@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="UTF-8" />
+<!-- meta使用viewport以确保页面可自由缩放 -->
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<script th:src="@{/js/jquery-1.12.4.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/jquery.cookie.js}"></script>
+<script th:src="@{/js/md5.js}"></script>
+<title>文档编辑页面</title>
+</head>
+<body>
+<div class="container">
+	<div class="row clearfix">
+		<!-- 页头开始 -->
+		<div class="col-md-12 column">
+			<div class="page-header">
+				<h1>
+					AskPro <small>这是测试</small>
+				</h1>
+			</div>
+			<ul class="breadcrumb">
+				<li>
+					 <a href="#">个人中心</a>
+				</li>
+				<li>
+					 <a href="#">Library</a>
+				</li>
+				<li class="active">
+					Data
+				</li>
+			</ul>
+		</div>
+		<!-- 页头结束 -->
+		<!-- 内容开始 -->
+		<div class="col-md-12 column">
+			<dl>
+				<dt id="questTitle">
+				</dt>
+				<dd id="questBody">
+				</dd>
+			</dl>
+			<div id="answerListShow">
+				<textarea class="form-control" rows="15" cols="30" id="content">
+				</textarea>
+			</div>
+			<button type="button" class="btn btn-default" onclick="createNew()">提交回答</button>
+		</div>
+		<!-- 内容结束 -->
+	
+		<!-- 页脚开始 -->
+		<div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+			<div class="container text-center login-bottom">
+				&copy; 2017 <br/> Powered by ficito.d2k@gmail.com
+			</div>
+		</div>
+		<!-- 页脚结束 -->
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+var tokenName = "askPro_token";
+var loginError = '400';
+//登录页[常用链接]
+var loginUrl = "/view/login";
+//所有问题列表
+var allQuestUrl = "/view/questShow";
+//获取问题
+var questUrl = "/quest/get";
+//回答问题
+var answerUrl = "/quest/answer";
+
+var token = $.cookie(tokenName);
+var questId = $.cookie("questId")?$.cookie("questId"):0;
+
+//参数校验
+if(token == null || token == ''){
+	alert("登录失效,请重新登录");
+	turnViewUrl(loginUrl);
+}
+if(questId == 0){
+	alert("问题不存在,请重新选择");
+	turnViewUrl(allQuestUrl);
+}
+getQuestion();
+//获取question对象
+function getQuestion(){
+	var reqData = {"token":token,"obj":questId};
+	var questionObj = ajaxRequest(questUrl, reqData);
+	if(questionObj.code == 1){
+		questionShow(questionObj.object);
+	}else{
+		turnViewUrl(allQuestUrl);
+	}
+}
+//问题展示[每页可能不一样]
+function questionShow(questionObj){
+	var html = "标题:"+questionObj.questTitle;
+	$("#questTitle").html(html);
+	html = "内容:<br/>"+questionObj.questBody+"<br/>";
+	$("#questBody").html(html);
+}
+//回答问题
+function createNew() {
+	var answerBody = $("#content").val();
+	var reqData = {"token":token,"obj":{"questionId":questId,"answerContent":answerBody}};
+	console.info(reqData);
+	var responseData = ajaxRequest(answerUrl, reqData);
+	if(responseData.code == 1){
+		alert("回答成功!");
+	 	turnViewUrl(allQuestUrl);
+	}
+}
+//展示页面跳转[每页都需要]
+function turnViewUrl(url){
+	window.location.href=url;
+}
+//ajax请求[每页都需要]
+function ajaxRequest(reqUrl,reqData){
+	var responseData = {};
+	$.ajax({
+		type:"POST",
+		url:reqUrl,
+		contentType : "application/json; charset=utf-8",
+		async: false,
+		data:JSON.stringify(reqData),
+		success:function(data){
+			responseData = JSON.parse(data);
+			if(responseData.code == loginError){
+				alert("登录失效,请重新登录");
+				turnViewUrl(loginUrl);
+				return null;
+			}
+			if(responseData.code != "1"){
+				alert(responseData.message);
+			}
+		},
+	});
+	return responseData;
+}
+</script>
+</html>
