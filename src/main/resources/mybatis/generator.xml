@@ -48,8 +48,8 @@
 			targetPackage="org.fictio.askPro.dao"
 			targetProject="D:\Java\workspace\askPro\src\main\java">
 		</javaClientGenerator>
-		
-<!-- 	<table tableName="ijjg_user" domainObjectName="User" 
+<!--		
+ 		<table tableName="ijjg_user" domainObjectName="User" 
 					enableCountByExample="false" enableDeleteByExample="false" 
 					enableSelectByExample="false" enableUpdateByExample="false">
 		</table>
@@ -57,18 +57,19 @@
 					enableCountByExample="false" enableDeleteByExample="false" 
 					enableSelectByExample="false" enableUpdateByExample="false">
 		</table> 
-		
 		<table tableName="ijjg_question" domainObjectName="Question" 
 					enableCountByExample="false" enableDeleteByExample="false" 
 					enableSelectByExample="false" enableUpdateByExample="false">
 		</table>
--->
-		
 		<table tableName="ijjg_answer" domainObjectName="Answer" 
 					enableCountByExample="false" enableDeleteByExample="false" 
 					enableSelectByExample="false" enableUpdateByExample="false">
 		</table>
-		
+-->
+		<table tableName="ijjg_commend" domainObjectName="Commend" 
+					enableCountByExample="false" enableDeleteByExample="false" 
+					enableSelectByExample="false" enableUpdateByExample="false">
+		</table>
 		<!-- 不生成example相关类 
 		<table tableName="jjg_goods" domainObjectName="Good" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
 			<property name="useActualColumnNames" value="true" />

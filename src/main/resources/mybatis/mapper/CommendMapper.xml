@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.fictio.askPro.dao.CommendMapper">
+	<resultMap id="BaseResultMap" type="org.fictio.askPro.pojo.Commend">
+		<result column="commend_id" jdbcType="INTEGER" property="commendId" />
+		<result column="answer_id" jdbcType="INTEGER" property="answerId" />
+		<result column="user_id" jdbcType="INTEGER" property="userId" />
+		<result column="user_name" jdbcType="VARCHAR" property="userName" />
+		<result column="commend_status" jdbcType="INTEGER" property="commendStatus" />
+		<result column="commend_time" jdbcType="DATE" property="commendTime" />
+	</resultMap>
+	<select id="selectCommendByUser" resultMap="BaseResultMap">
+		select * from ijjg_commend where user_id = #{userId} and answer_id = #{answerId} limit 1
+	</select>
+	<update id="updateCommend" parameterType="org.fictio.askPro.pojo.Commend">
+    	update ijjg_commend
+    	<set>
+    		<if test="answerId != null">answer_id = #{answerId},</if>
+    		<if test="userId != null">user_id = #{userId},</if>
+    		<if test="userName != null">user_name = #{userName},</if>
+    		<if test="commendStatus != null">commend_status = #{commendStatus},</if>
+    		<if test="commendTime != null">commend_time = #{commendTime},</if>
+    	</set>
+		where commend_id = #{commendId}
+	</update>
+	<insert id="insert" parameterType="org.fictio.askPro.pojo.Commend">
+		insert into ijjg_commend (commend_id, answer_id, user_id, user_name, commend_status, commend_time)
+		values (#{commendId,jdbcType=INTEGER}, #{answerId,jdbcType=INTEGER},#{userId,jdbcType=INTEGER},
+		#{userName,jdbcType=VARCHAR}, #{commendStatus,jdbcType=INTEGER}, #{commendTime,jdbcType=DATE})
+	</insert>
+	<insert id="insertSelective" parameterType="org.fictio.askPro.pojo.Commend">
+		insert into ijjg_commend
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="commendId != null">
+				commend_id,
+			</if>
+			<if test="answerId != null">
+				answer_id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="userName != null">
+				user_name,
+			</if>
+			<if test="commendStatus != null">
+				commend_status,
+			</if>
+			<if test="commendTime != null">
+				commend_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="commendId != null">
+				#{commendId,jdbcType=INTEGER},
+			</if>
+			<if test="answerId != null">
+				#{answerId,jdbcType=INTEGER},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=INTEGER},
+			</if>
+			<if test="userName != null">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="commendStatus != null">
+				#{commendStatus,jdbcType=TINYINT},
+			</if>
+			<if test="commendTime != null">
+				#{commendTime,jdbcType=DATE},
+			</if>
+		</trim>
+	</insert>
+</mapper>

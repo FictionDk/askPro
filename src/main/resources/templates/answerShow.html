@@ -27,13 +27,10 @@
 			</div>
 			<ul class="breadcrumb">
 				<li>
-					 <a href="#">个人中心</a>
+					 <a href="/view/userIndex">个人中心</a>
 				</li>
 				<li>
-					 <a href="#">Library</a>
-				</li>
-				<li class="active">
-					Data
+					 <a href="/view/questShow">问题列表</a>
 				</li>
 			</ul>
 		</div>
@@ -71,15 +68,18 @@
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<a class="panel-title collapsed" data-toggle="collapse" style="font-size:13px;"
-				href="#panel-element-${answerId}">${userName} time:${answerUpdateTime}</a>
+				href="#panel-element-${answer.answerId}">${answer.userName} time:${answer.answerUpdateTime}
+			</a>
 		</div>
-		<div id="panel-element-${answerId}" class="panel-collapse collapse">
+		<div id="panel-element-${answer.answerId}" class="panel-collapse collapse">
 			<div class="panel-body">
-				${answerContent}
+				${answer.answerContent}
 				<br/><br/><br/>
 				<div class="btn-group btn-group-xs">
 					<button type="button" class="btn btn-default">评论</button>
-					<button type="button" class="btn btn-default">点赞</button>
+					<a class="btn btn-primary btn-large" id="${answer.answerId}"><span id="commend_${answer.answerId}">${answerStatus}</span>
+						<span id="count_${answer.answerId}" class="badge">${answer.commendCount}</span>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -99,6 +99,8 @@ var allQuestUrl = "/view/questShow";
 var questUrl = "/quest/get";
 //回答问题
 var answerUrl = "/view/answerEdit";
+//点/取消赞
+var commendUrl = "/quest/commend";
 //当前页
 var page = 0;
 //页面查询起始
@@ -122,21 +124,55 @@ if(questId == 0){
 }
 getAnswerListByQuestId();
 
+//获取答案列表
 function getAnswerListByQuestId(){
+	//根据id获取问题
 	var reqData = {"token":token,"obj":questId}
 	var responseData = ajaxRequest(questUrl, reqData);
 	if(responseData.code != 1){
 		return null;
 	}
 	questionShow(responseData.object);
-	reqData = {"token":token,"obj":{"pageStart":pageStart,"questId":questId}};
-	responseData = ajaxRequest(answerListUrl,reqData);
-	answerShow(responseData.object)
+	//获取问题的答案列表
+	getMore();
+}
+//点/取消赞
+$(function(){
+	$(".btn-large").each(function(){
+		$(this).click(function(){
+			var answerId = $(this).attr("id")?$(this).attr("id"):0;
+			if(answerId == 0){
+				return null;
+			}
+			var reqData = {"token":token,"obj":answerId}
+			var result = ajaxRequest(commendUrl,reqData);
+			if(result.code == 1){
+				answerCommendShow(answerId, result.object);
+			}
+		});	
+	});
+});
+//点/取消赞后的展示
+function answerCommendShow(answerId,resultType) {
+	var count = $("#count_"+answerId).html();
+	if(resultType == 1){
+		//console.info("点赞后的展示");
+		$("#commend_"+answerId).html("取消赞")
+		count ++;
+	}else{
+		//console.info("取消赞后的展示");
+		$("#commend_"+answerId).html("点赞")
+		count --;
+	}
+	$("#count_"+answerId).html(count);
 }
 //加载下一页
 function getMore(){
 	if(hasMore){
 		console.info("getting more ...");
+		reqData = {"token":token,"obj":{"pageStart":pageStart,"questId":questId}};
+		responseData = ajaxRequest(answerListUrl,reqData);
+		answerShow(responseData.object);
 	}
 }
 //问题展示;
@@ -149,6 +185,7 @@ function questionShow(questionObj){
 //问题回答列表展示
 function answerShow(pageBody){
 	var content = pageBody.pageContent;
+	var pageSize = pageBody.pageSize;
 	$('#answerTemp').tmpl(content).appendTo('#answerListShow');
 	if(pageBody.countSize < pageBody.pageSize){
 		var clazz = "btn btn-inverse btn-default disabled btn-block";
@@ -157,6 +194,7 @@ function answerShow(pageBody){
 		hasMore = false;
 	}else{
 		page++;
+		pageStart = pageSize*page;
 	}
 }
 //前往回答问题页面

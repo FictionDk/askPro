@@ -14,4 +14,6 @@ public interface AnswerMapper {
 			@Param("pageStart")int pageStart,@Param("pageSize")int pageSize);
 	
 	Answer selectAnswerByUser(@Param("questId")int questId, @Param("userId")int userId);
+	
+	void updateAnswerCommendCount(@Param("answerId")int answerId,@Param("count")int commendCount);
 }

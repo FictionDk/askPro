@@ -20,6 +20,10 @@
 		select * from ijjg_answer where question_id = #{questId} and user_id = #{userId} limit 1;
 	</select>
 	
+	<update id="updateAnswerCommendCount">
+		update ijjg_answer set commend_count = concat(commend_count+#{count}) where answer_id = #{answerId}
+	</update>
+	
 	<insert id="insert" parameterType="org.fictio.askPro.pojo.Answer">
 		insert into ijjg_answer (answer_id, question_id, user_id,user_name,
 		answer_create_time, answer_update_time,

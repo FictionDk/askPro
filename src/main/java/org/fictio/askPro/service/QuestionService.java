@@ -1,14 +1,19 @@
 package org.fictio.askPro.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.fictio.askPro.constans.CommendConstans;
 import org.fictio.askPro.constans.ErrorConstans;
 import org.fictio.askPro.constans.ScoreTypeConstans;
 import org.fictio.askPro.dao.AnswerMapper;
+import org.fictio.askPro.dao.CommendMapper;
 import org.fictio.askPro.dao.QuestionMapper;
 import org.fictio.askPro.pojo.Answer;
 import org.fictio.askPro.pojo.AnswerReq;
+import org.fictio.askPro.pojo.AnswerResp;
+import org.fictio.askPro.pojo.Commend;
 import org.fictio.askPro.pojo.Page;
 import org.fictio.askPro.pojo.Question;
 import org.fictio.askPro.pojo.ResponseData;
@@ -27,6 +32,8 @@ public class QuestionService {
 	private QuestionMapper questDao;
 	@Autowired
 	private AnswerMapper answerDao;
+	@Autowired
+	private CommendMapper commendDao;
 	@Autowired
 	private UserService userService;
 
@@ -157,15 +164,45 @@ public class QuestionService {
 	 * @param answerReq
 	 * @return
 	 */
-	public ResponseData<Page<Answer>> getQuestionAnswerList(String userName, AnswerReq answerReq) {
-		ResponseData<Page<Answer>> result = new ResponseData<>();
-		Page<Answer> page = new Page<>();
+	public ResponseData<Page<AnswerResp>> getQuestionAnswerList(String userName, AnswerReq answerReq) {
+		ResponseData<Page<AnswerResp>> result = new ResponseData<>();
+		Page<AnswerResp> page = new Page<>();
+		List<AnswerResp> resultList = new ArrayList<>();
+		
 		List<Answer> answerList = answerDao.selectAnswerListByQuestId(answerReq.getQuestId(),
 				answerReq.getPageStart(),page.getPageSize());
-		page.setPageContent(answerList);
+		
+		for (Answer answer : answerList) {
+			AnswerResp answerResult = new AnswerResp();
+			answerResult.setAnswer(answer);
+			answerResult.setAnswerStatus(getAnswerCommendStatus(userName, answer.getAnswerId()));
+			resultList.add(answerResult);
+		}
+		
+		page.setPageContent(resultList);
 		page.setCountSize(answerList.size());
 		result.setObject(page);
 		result.setSuccess();
+		return result;
+	}
+	
+	/**
+	 * 获取当前用户当前答案点赞状态
+	 * @param userName
+	 * @param answerId
+	 * @return 0非赞/1点赞
+	 */
+	private String getAnswerCommendStatus(String userName,int answerId){
+		String result = CommendConstans.IS_COMMEND_STR;
+		User user = userService.getUserInfoByUserName(userName);
+		Commend commned = commendDao.selectCommendByUser(user.getUserId(), answerId);
+		if(commned == null){
+			result = CommendConstans.NOT_COMMEND_STR;
+		}else{
+			result = commned.getCommendStatus() == 
+					CommendConstans.IS_COMMEND ? CommendConstans.IS_COMMEND_STR
+							:CommendConstans.NOT_COMMEND_STR;
+		}
 		return result;
 	}
 
@@ -194,5 +231,74 @@ public class QuestionService {
 		userService.addUserScore(ScoreTypeConstans.ANSWER_QUESTION, user);
 		result.setSuccess();
 		return result;
+	}
+
+	/**
+	 * 给答案点赞/取消赞
+	 * @param userName
+	 * @param obj
+	 * @return
+	 */
+	@Transactional
+	public ResponseData<String> commendAnswer(String userName, Integer answerId) {
+		ResponseData<String> result = new ResponseData<>();
+		boolean commendCancel = false;
+		User user = userService.getUserInfoByUserName(userName);
+		Commend temp = commendDao.selectCommendByUser(user.getUserId(),answerId);
+		if(temp == null){
+			temp = insertNewCommend(answerId, user);
+		}else{
+			commendCancel = updateCommend(temp);
+		}
+		updateAnswerCommendCount(commendCancel,answerId);
+		result.setObject(temp.getCommendStatus()+"");
+		result.setSuccess();
+		return result;
+	}
+	
+	/**
+	 * 更新当前commend状态;
+	 * @param commend
+	 */
+	private boolean updateCommend(Commend commend){
+		boolean commendCancel = false;
+		if(commend.getCommendStatus() == (CommendConstans.IS_COMMEND)){
+			commend.setCommendStatus(CommendConstans.NOT_COMMEND);
+			commendCancel = true;
+		}else{
+			commend.setCommendStatus(CommendConstans.IS_COMMEND);
+		}
+		commend.setCommendTime(new Date());
+		commendDao.updateCommend(commend);
+		return commendCancel;
+	}
+	
+	/**
+	 * 添加新的赞
+	 * @param answerId
+	 * @param user
+	 */
+	private Commend insertNewCommend(int answerId,User user){
+		Commend commend = new Commend();
+		commend.setAnswerId(answerId);
+		commend.setUserId(user.getUserId());
+		commend.setUserName(user.getUserName());
+		commend.setCommendTime(new Date());
+		commend.setCommendStatus(CommendConstans.IS_COMMEND);
+		commendDao.insert(commend);
+		return commend;
+	}
+	
+	/**
+	 * 更新回答赞的数量
+	 * @param commendCancel 赞是否取消
+	 * @param answerId 回答的id
+	 */
+	private void updateAnswerCommendCount(boolean commendCancel,int answerId){
+		int count = 1;
+		if(commendCancel){
+			count = -1;
+		}
+		answerDao.updateAnswerCommendCount(answerId, count);
 	}
 }
