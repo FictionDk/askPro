@@ -10,7 +10,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gson.Gson;
 
-@ControllerAdvice
+/**
+ * 全局异常捕捉类
+ * @author dk
+ */
+//@ControllerAdvice
 public class GlobelExceptionHandler {
 	private static Logger log = LoggerFactory.getLogger(GlobelExceptionHandler.class);
 	private static Gson gson = new Gson();
@@ -32,7 +36,7 @@ public class GlobelExceptionHandler {
 		log.info("2"+e.getLocalizedMessage());
 		log.info(e.toString());
 		ResponseData<String> result = new ResponseData<>();
-		result.setMessage(e.getMessage());
+		result.setMessage("系统异常");
 		return gson.toJson(result);
 	}
 

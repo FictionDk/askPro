@@ -1,40 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head>
-<meta charset="UTF-8" />
-<!-- meta使用viewport以确保页面可自由缩放 -->
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
-<script th:src="@{/js/jquery-1.12.4.min.js}"></script>
-<script th:src="@{/js/bootstrap.min.js}"></script>
-<script th:src="@{/js/jquery.cookie.js}"></script>
-<script th:src="@{/js/md5.js}"></script>
-<title>文档编辑页面</title>
-</head>
+<div th:insert="common/layout :: header"></div>
 <body>
 <div class="container">
 	<div class="row clearfix">
-		<!-- 页头开始 -->
-		<div class="col-md-12 column">
-			<div class="page-header">
-				<h1>
-					AskPro <small>这是测试</small>
-				</h1>
-			</div>
-			<ul class="breadcrumb">
-				<li>
-					 <a href="#">个人中心</a>
-				</li>
-				<li>
-					 <a href="#">Library</a>
-				</li>
-				<li class="active">
-					Data
-				</li>
-			</ul>
-		</div>
-		<!-- 页头结束 -->
+		<div th:insert="common/layout :: top"></div>
 		<!-- 内容开始 -->
 		<div class="col-md-12 column">
 			<dl>
@@ -50,14 +21,7 @@
 			<button type="button" class="btn btn-default" onclick="createNew()">提交回答</button>
 		</div>
 		<!-- 内容结束 -->
-	
-		<!-- 页脚开始 -->
-		<div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-			<div class="container text-center login-bottom">
-				&copy; 2017 <br/> Powered by ficito.d2k@gmail.com
-			</div>
-		</div>
-		<!-- 页脚结束 -->
+		<div th:insert="common/layout :: footer"></div>
 	</div>
 </div>
 </body>

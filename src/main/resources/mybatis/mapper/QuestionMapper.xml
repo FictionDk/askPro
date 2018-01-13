@@ -25,14 +25,16 @@
 	
 	
 	<update id="updateQuestionById">
-		update ijjg_question set (quest_title,
-		quest_create_time, quest_update_time, quest_body)
-		values (#{questTitle,jdbcType=VARCHAR},
-		#{questCreateTime,jdbcType=TIMESTAMP}, #{questUpdateTime,jdbcType=TIMESTAMP},
-		#{questBody,jdbcType=LONGVARCHAR}) 
-		where quest_id = #{questId}
+		update ijjg_question
+		<set>
+			<if test="questTitle != null">quest_title = #{questTitle,jdbcType=VARCHAR}</if>
+			<if test="questUpdateTime != null">quest_update_time = #{questUpdateTime,jdbcType=TIMESTAMP}</if>
+			<if test="questBody != null">quest_body = #{questBody,jdbcType=LONGVARCHAR}</if>
+		</set>
+		<where>
+			quest_id = #{questId}		
+		</where>
 	</update>
-	
 	<insert id="insert" parameterType="org.fictio.askPro.pojo.Question">
 		insert into ijjg_question (quest_id, quest_user_id, quest_title,
 		quest_create_time, quest_update_time, quest_body)

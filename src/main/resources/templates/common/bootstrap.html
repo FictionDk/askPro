@@ -9,8 +9,8 @@
 <script th:src="@{/js/bootstrap.min.js}"></script>
 <script th:src="@{/js/jquery.cookie.js}"></script>
 <script th:src="@{/js/md5.js}"></script>
+<script th:src="@{/js/jquery.tmpl.js}"></script>
 </head>
-
 <body>
 <div class="container">
 <div class="row clearfix">
@@ -21,11 +21,19 @@
 					AskPro <small>这是测试</small>
 				</h1>
 			</div>
+			<ul class="breadcrumb">
+				<li>
+					 <a href="/view/userIndex">个人中心</a>
+				</li>
+				<li>
+					 <a href="/view/questShow">问题列表</a>
+				</li>
+			</ul>
 		</div>
 	</div>
 
 	<div class="col-md-12 column" style="margin:auto;margin-bottom:70px;">
-	    <div th:include="this :: content"></div>
+	    <div layout:fragment="content"></div>
 	</div>
 
 	<div class="navbar navbar-default navbar-fixed-bottom"

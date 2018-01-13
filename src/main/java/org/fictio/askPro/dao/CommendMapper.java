@@ -1,8 +1,9 @@
 package org.fictio.askPro.dao;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.fictio.askPro.pojo.Commend;
-
+@Mapper
 public interface CommendMapper {
     int insert(Commend record);
 

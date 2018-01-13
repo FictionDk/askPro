@@ -13,6 +13,7 @@ import org.fictio.askPro.pojo.ResponseData;
 import org.fictio.askPro.pojo.User;
 import org.fictio.askPro.pojo.UserIndex;
 import org.fictio.askPro.pojo.UserLogin;
+import org.fictio.askPro.pojo.event.QuestionCreateEvent;
 import org.fictio.askPro.util.CacheManager;
 import org.fictio.askPro.util.NotifyClientProxy;
 import org.fictio.askPro.util.NotifyManager;
@@ -20,17 +21,19 @@ import org.fictio.askPro.util.TokenManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 
 @Component
-public class UserService {
+public class UserService implements ApplicationListener<QuestionCreateEvent> {
 	@Autowired
 	private UserDao userDao;
-	
 	@Autowired
 	private QuestionService questService;
+	@Autowired
+	private TokenManager tokenManage;
 	
 	private static Logger log = LoggerFactory.getLogger(UserService.class);
 
@@ -69,7 +72,7 @@ public class UserService {
 			user.setLastLoginTime(new Date());
 			userDao.insert(user);
 			log.info(user.toString());
-			String token = TokenManager.getInstance().createToken(user.getUserName());
+			String token = tokenManage.createToken(user.getUserName());
 			log.info("生成token:"+token);
 			result.setSuccess();
 			result.setToken(token);
@@ -102,13 +105,7 @@ public class UserService {
 	 */
 	public ResponseData<String> userLogin(UserLogin u) {
 		ResponseData<String> responseData = new ResponseData<>();
-		User tempUser = null;
-		try {
-			tempUser = userDao.selectUserByUsername(u.getUserName());
-		} catch (Exception e) {
-			log.info(e.getMessage());
-			throw new RuntimeException(ErrorConstans.JDBC_ERROR_MSG);
-		}
+		User tempUser = userDao.selectUserByUsername(u.getUserName());
 		if(tempUser == null){
 			responseData.setCode(ErrorConstans.USERNAME_NOT_EXIT_CODE);
 			responseData.setMessage(ErrorConstans.USERNAME_NOT_EXIT_MSG);
@@ -116,7 +113,7 @@ public class UserService {
 			responseData.setCode(ErrorConstans.USER_PASSWORD_NO_MATCHED_COD);
 			responseData.setMessage(ErrorConstans.USER_PASSWORD_NO_MATCHED_MSG);
 		}else{
-			String token = TokenManager.getInstance().createToken(u.getUserName());
+			String token = tokenManage.createToken(u.getUserName());
 			log.info(String.valueOf(tempUser==null));
 			tempUser.setLastLoginTime(new Date());
 			userDao.updateUserLastLoginTime(tempUser);
@@ -135,7 +132,7 @@ public class UserService {
 	public ResponseData<UserIndex> getUserIndexInfo(String token) {
 		ResponseData<UserIndex> responseData = new ResponseData<>();
 		UserIndex userIndex = new UserIndex();
-		String userName = TokenManager.getInstance().getTokenValue(token);
+		String userName = tokenManage.getTokenValue(token);
 		User u = userDao.selectUserByUsername(userName);
 		if(u == null){
 			responseData.setCode(ErrorConstans.TOKEN_ERROR_CODE);
@@ -163,7 +160,7 @@ public class UserService {
 	 */
 	public ResponseData<String> userLoginOut(String token, String userName) {
 		ResponseData<String> result = new ResponseData<>();
-		String uName = TokenManager.getInstance().getTokenValue(token);
+		String uName = tokenManage.getTokenValue(token);
 		if(Strings.isNullOrEmpty(uName) && uName.equals(userName)){
 			result.setSuccess();
 		}else{
@@ -191,5 +188,13 @@ public class UserService {
 		default:
 			throw new RuntimeException("当前积分类型不存在");
 		}
+	}
+
+	@Override
+	public void onApplicationEvent(QuestionCreateEvent event) {
+		Question question = (Question) event.getSource();
+		User user = userDao.queryObject(question.getQuestUserId());
+		user.setUserScore(ScoreTypeConstans.ASK_QUESTION_SCORE);
+		userDao.updateUserScore(user);		
 	}
 }

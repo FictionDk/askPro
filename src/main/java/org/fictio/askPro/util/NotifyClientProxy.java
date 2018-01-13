@@ -4,6 +4,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+/**
+ * 短信发送的动态代理对象
+ * @author dk
+ */
 public class NotifyClientProxy implements InvocationHandler {
 
 	private NotifyManager notifyClient;

@@ -58,8 +58,8 @@ public class UserController {
 	@UserAccess
 	public String userInfoGet(@RequestBody RequestData<String> requestData){
 		ResponseData<UserIndex> result = new ResponseData<>();
-		log.info(requestData.getToken());
 		result = userService.getUserIndexInfo(requestData.getToken());
+		log.info("getUserInfo={}",result.toString());
 		return gson.toJson(result);
 	}
 	

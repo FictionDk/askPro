@@ -18,6 +18,10 @@
 	<select id="selectUserByUsername" resultMap="BaseResultMap">
 		select * from ijjg_user where user_name = #{userName} limit 1
 	</select>
+	<select id="queryObject" resultMap="BaseResultMap">
+		select * from ijjg_user where user_id = #{userId};
+	</select>
+	
 	<update id="updateUserLastLoginTime" parameterType="org.fictio.askPro.pojo.User">
 		update ijjg_user set last_login_time = #{lastLoginTime} where user_id = #{userId}
 	</update>

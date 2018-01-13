@@ -21,7 +21,9 @@
     		<if test="commendStatus != null">commend_status = #{commendStatus},</if>
     		<if test="commendTime != null">commend_time = #{commendTime},</if>
     	</set>
-		where commend_id = #{commendId}
+    	<where>
+			commend_id = #{commendId}
+    	</where>
 	</update>
 	<insert id="insert" parameterType="org.fictio.askPro.pojo.Commend">
 		insert into ijjg_commend (commend_id, answer_id, user_id, user_name, commend_status, commend_time)

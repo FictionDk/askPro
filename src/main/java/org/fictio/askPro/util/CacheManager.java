@@ -5,6 +5,10 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+/**
+ * 使用google.common.cache包创建的内存缓存管理对象
+ * @author dk
+ */
 public class CacheManager {
 	
 	private static Cache<String, String> localCache = CacheBuilder.newBuilder()

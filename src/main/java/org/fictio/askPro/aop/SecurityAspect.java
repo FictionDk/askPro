@@ -9,6 +9,7 @@ import org.fictio.askPro.util.TokenException;
 import org.fictio.askPro.util.TokenManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -18,7 +19,9 @@ import com.google.common.base.Strings;
 public class SecurityAspect {
 	
 	private static Logger log = LoggerFactory.getLogger(SecurityAspect.class);
-	private TokenManager tokenManger = TokenManager.getInstance();
+	
+	@Autowired
+	private TokenManager tokenManger;
 	
 	@SuppressWarnings("unchecked")
 	@Before(("@annotation(tokenCheck)"))

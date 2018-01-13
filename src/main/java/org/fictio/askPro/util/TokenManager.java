@@ -1,32 +1,25 @@
 package org.fictio.askPro.util;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-public class TokenManager {
+import org.fictio.askPro.util.RedisUtils.RedisKey;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-	private static TokenManager instance = new TokenManager();
+@Component
+public class TokenManager {
 	
-	private static Cache<String, String> tokenCache = CacheBuilder.newBuilder()
-			.concurrencyLevel(4).expireAfterAccess(6000, TimeUnit.SECONDS)
-			.maximumSize(3000).build();
+	@Autowired
+	private RedisUtils redisUtils;
 	
-	private TokenManager(){};
-	
-	public static TokenManager getInstance(){
-		return instance;
-	}
 	
 	public String createToken(String userName){
 		String token = UUID.randomUUID().toString();
-		tokenCache.put(token, userName);
+		redisUtils.set(RedisKey.USER_TOKEN_+token, userName, RedisUtils.HALF_DAY);
 		return token;
 	}
 	
 	public String getTokenValue(String token){
-		String userName = tokenCache.getIfPresent(token);
-		return userName;
+		return redisUtils.get(RedisKey.USER_TOKEN_+token);
 	}
 
 }

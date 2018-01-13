@@ -21,12 +21,14 @@ import org.fictio.askPro.pojo.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Component
-public class QuestionService {
+public class QuestionService implements ApplicationEventPublisherAware {
 	private static Logger log = LoggerFactory.getLogger(QuestionService.class);
 	@Autowired
 	private QuestionMapper questDao;
@@ -36,6 +38,7 @@ public class QuestionService {
 	private CommendMapper commendDao;
 	@Autowired
 	private UserService userService;
+	private ApplicationEventPublisher applicationEventPubliser;
 
 	/**
 	 * 生成新问题
@@ -52,6 +55,8 @@ public class QuestionService {
 			question.setQuestUpdateTime(new Date());
 			question.setQuestUserId(user.getUserId());
 			questDao.insert(question);
+			log.info("问题创建成功:{}",question);
+			applicationEventPubliser.publishEvent(question);
 			userService.addUserScore(ScoreTypeConstans.ASK_QUESTION,user);
 		} catch (Exception e) {
 			result.setCode(ErrorConstans.QUESTION_CREATE_FAIL_CODE);
@@ -300,5 +305,10 @@ public class QuestionService {
 			count = -1;
 		}
 		answerDao.updateAnswerCommendCount(answerId, count);
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+		this.applicationEventPubliser = applicationEventPublisher;
 	}
 }
